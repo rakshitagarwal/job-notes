@@ -1,3 +1,5 @@
+# Javascript core concepts
+
 ---
 
 ## 1. Scope in JS
@@ -44,7 +46,6 @@ console.log(blockVar); // ❌ ReferenceError
 ```
 
 > **Note:** `var` does NOT respect block scope — it leaks out of blocks but not functions.
-> 
 
 ---
 
