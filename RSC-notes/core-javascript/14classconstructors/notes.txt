@@ -1,0 +1,40 @@
+// Question 1 - Explain the difference between a class and an object in JavaScript.
+Explanation: 
+A class is a blueprint that defines the structure and behavior of objects.
+Objects are instances of classes that possess properties and methods defined by the class.
+
+// Question 2 - What’s the Output?
+Explanation: 
+The output will be:
+console.log(square.area()); // 25
+console.log(rect.area()); // 24
+Here, `square` and `rect` are instances of the `Rectangle` class, and `area()` calculates their areas accordingly.
+
+// Question 3 - How does inheritance work in JavaScript classes?
+Explanation: 
+Inheritance in JavaScript classes is achieved using the `extends` keyword.
+It allows a subclass (child class) to inherit properties and methods from a superclass (parent class).
+
+// Question 4 - What’s the Output?
+Explanation: 
+The code will result in an error: `Uncaught SyntaxError: A class may only have one constructor`.
+JavaScript classes can only have one constructor, so having multiple constructor declarations in the `Employee` class causes a syntax error.
+
+// Question 5 - Which approach is better and why?
+Explanation: 
+The second approach is better because it registers the `getFullName` method in the prototype, making it more memory-efficient than the first approach, which creates a closure for each object containing the method.
+
+// Question 6 - Implement this -
+Explanation: 
+The `Calculator` class defines methods for basic arithmetic operations (`add`, `subtract`, `multiply`, `divide`) and returns the result after each operation.
+Method chaining is used to perform multiple operations in sequence.
+
+// Question 7 - Inheritance and Polymorphism
+Explanation: 
+The `Shape` class has an `area()` method that returns 0 by default.
+Subclasses `Circle` and `Square` inherit from `Shape` and override the `area()` method to calculate their respective areas (circle's area using πr^2 formula and square's area using side * side formula).
+
+// Question 8 - What are Getters and Setters in JS?
+Explanation: 
+Getters and setters are methods used to control access to the properties of a class.
+They allow for more controlled modification and retrieval of property values, such as incrementing likes in a video or ensuring certain conditions are met before setting a property value.
