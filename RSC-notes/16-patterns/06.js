@@ -1,191 +1,191 @@
-// ==================== 6. BFS (Breadth-First Search) ====================
+// ==================== 6. BINARY SEARCH ====================
 
 /**
- * Pattern: BFS
- * Level-order traversal for shortest path and level-based problems
+ * Notes: https://www.hellointerview.com/learn/code/binary-search/overview
+ * Time Complexity: O(log n) | Space Complexity: O(1)
  */
 
-// Problem 1: Binary Tree Level Order Traversal
-// Pattern: BFS
-// Link: https://leetcode.com/problems/binary-tree-level-order-traversal/
-const levelOrder = function (root) {
-  if (!root) return [];
-
-  const result = [];
-  const queue = [root];
-
-  while (queue.length) {
-    const levelSize = queue.length;
-    const currentLevel = [];
-
-    for (let i = 0; i < levelSize; i++) {
-      const node = queue.shift();
-      currentLevel.push(node.val);
-
-      if (node.left) queue.push(node.left);
-      if (node.right) queue.push(node.right);
+// Problem 1: Koko Eating Bananas
+// Link: https://leetcode.com/problems/koko-eating-bananas/
+// Time Complexity: O(log n) | Space Complexity: O(1)
+var minEatingSpeed = function (apples, h) {
+  // Binary search on harvest rate: find minimum rate to finish in h hours
+  function timeTaken(rate) {
+    let time = 0;
+    // Calculate total time needed at this harvest rate
+    for (let i = 0; i < apples.length; i++) {
+      // Ceiling division
+      time += Math.ceil(apples[i] / rate);
     }
+    return time;
+  }
+  // Binary search bounds: minimum rate = 1, maximum rate = max apples
+  let left = 1;
+  let right = Math.max(...apples);
 
-    result.push(currentLevel);
+  // Binary search for minimum valid harvest rate
+  while (left < right) {
+    const mid = Math.floor((left + right) / 2);
+    if (timeTaken(mid) > h) {
+      // Rate too slow, need faster rate
+      left = mid + 1;
+    } else {
+      // Rate is sufficient, try slower rate
+      right = mid;
+    }
   }
 
-  return result;
+  return left;
 };
 
-// Problem 2: Rotting Oranges
-// Pattern: BFS
-// Link: https://leetcode.com/problems/rotting-oranges/
-const orangesRotting = function (grid) {
-  const rows = grid.length;
-  const cols = grid[0].length;
-  const queue = [];
-  let freshCount = 0;
-  let minutes = 0;
-
-  // Find all rotten oranges
-  for (let i = 0; i < rows; i++) {
-    for (let j = 0; j < cols; j++) {
-      if (grid[i][j] === 2) {
-        queue.push([i, j]);
-      } else if (grid[i][j] === 1) {
-        freshCount++;
+// Problem 2: Search in Rotated Sorted Array
+// Link: https://leetcode.com/problems/search-in-rotated-sorted-array/
+// Time Complexity: O(log n) | Space Complexity: O(1)
+function search(nums, target) {
+  let left = 0;
+  let right = nums.length - 1;
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    if (nums[mid] === target) {
+      return mid;
+    }
+    if (nums[left] <= nums[mid]) {
+      // left half is sorted
+      if (nums[left] <= target && target < nums[mid]) {
+        // target is in the left half
+        right = mid - 1;
+      } else {
+        // target is in the right half
+        left = mid + 1;
+      }
+    } else {
+      // right half is sorted
+      if (nums[mid] < target && target <= nums[right]) {
+        // target is in the right half
+        left = mid + 1;
+      } else {
+        // target is in the left half
+        right = mid - 1;
       }
     }
   }
-
-  if (freshCount === 0) return 0;
-
-  const directions = [
-    [0, 1],
-    [0, -1],
-    [1, 0],
-    [-1, 0],
-  ];
-
-  while (queue.length && freshCount > 0) {
-    const size = queue.length;
-
-    for (let i = 0; i < size; i++) {
-      const [x, y] = queue.shift();
-
-      for (const [dx, dy] of directions) {
-        const newX = x + dx;
-        const newY = y + dy;
-
-        if (
-          newX >= 0 &&
-          newX < rows &&
-          newY >= 0 &&
-          newY < cols &&
-          grid[newX][newY] === 1
-        ) {
-          grid[newX][newY] = 2;
-          freshCount--;
-          queue.push([newX, newY]);
-        }
-      }
-    }
-
-    minutes++;
-  }
-
-  return freshCount === 0 ? minutes : -1;
-};
-
-// Problem 3: Word Ladder
-// Pattern: BFS
-// Link: https://leetcode.com/problems/word-ladder/
-const ladderLength = function (beginWord, endWord, wordList) {
-  const wordSet = new Set(wordList);
-  if (!wordSet.has(endWord)) return 0;
-
-  const queue = [[beginWord, 1]];
-
-  while (queue.length) {
-    const [word, length] = queue.shift();
-
-    if (word === endWord) return length;
-
-    for (let i = 0; i < word.length; i++) {
-      for (let charCode = 97; charCode <= 122; charCode++) {
-        const newWord =
-          word.slice(0, i) + String.fromCharCode(charCode) + word.slice(i + 1);
-
-        if (wordSet.has(newWord)) {
-          queue.push([newWord, length + 1]);
-          wordSet.delete(newWord);
-        }
-      }
-    }
-  }
-
-  return 0;
-};
-
-// Problem 4: Minimum Depth of Binary Tree
-// Pattern: BFS
-// Link: https://leetcode.com/problems/minimum-depth-of-binary-tree/
-const minDepth = function (root) {
-  if (!root) return 0;
-
-  const queue = [[root, 1]];
-
-  while (queue.length) {
-    const [node, depth] = queue.shift();
-
-    if (!node.left && !node.right) {
-      return depth;
-    }
-
-    if (node.left) queue.push([node.left, depth + 1]);
-    if (node.right) queue.push([node.right, depth + 1]);
-  }
-
-  return 0;
-};
-
-// Problem 5: Shortest Path in Binary Matrix
-// Pattern: BFS
-// Link: https://leetcode.com/problems/shortest-path-in-binary-matrix/
-const shortestPathBinaryMatrix = function (grid) {
-  if (grid[0][0] !== 0) return -1;
-
-  const n = grid.length;
-  const queue = [[0, 0, 1]]; // [row, col, distance]
-  grid[0][0] = 1; // Mark as visited
-
-  const directions = [
-    [0, 1],
-    [0, -1],
-    [1, 0],
-    [-1, 0],
-    [1, 1],
-    [1, -1],
-    [-1, 1],
-    [-1, -1],
-  ];
-
-  while (queue.length) {
-    const [row, col, dist] = queue.shift();
-
-    if (row === n - 1 && col === n - 1) return dist;
-
-    for (const [dx, dy] of directions) {
-      const newRow = row + dx;
-      const newCol = col + dy;
-
-      if (
-        newRow >= 0 &&
-        newRow < n &&
-        newCol >= 0 &&
-        newCol < n &&
-        grid[newRow][newCol] === 0
-      ) {
-        grid[newRow][newCol] = 1;
-        queue.push([newRow, newCol, dist + 1]);
-      }
-    }
-  }
-
   return -1;
+}
+
+// Problem 3: Split Array Largest Sum
+// Link: https://leetcode.com/problems/split-array-largest-sum/
+// Time Complexity: O(log n) | Space Complexity: O(1)
+var splitArray = function (nums, k) {
+  // Step 1: Define search space
+  let left = Math.max(...nums); // minimum possible max sum
+  let right = nums.reduce((sum, num) => sum + num, 0); // maximum possible
+
+  // Step 2: Helper function to check feasibility
+  function canSplit(maxAllowed) {
+    let subarrays = 1;
+    let currSum = 0;
+
+    for (let num of nums) {
+      // If adding this element exceeds limit → create new subarray
+      if (currSum + num > maxAllowed) {
+        subarrays++;
+        currSum = num;
+      } else {
+        currSum += num;
+      }
+    }
+
+    // Check if we can split into at most k subarrays
+    return subarrays <= k;
+  }
+
+  // Step 3: Binary search on answer
+  while (left < right) {
+    let mid = Math.floor((left + right) / 2);
+
+    if (canSplit(mid)) {
+      // Try to minimize further
+      right = mid;
+    } else {
+      // Need larger max sum
+      left = mid + 1;
+    }
+  }
+
+  return left;
+};
+
+// Problem 4: Kth Smallest Element in a Sorted Matrix
+// Link: https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/
+var kthSmallest = function (matrix, k) {
+  const n = matrix.length;
+
+  let left = matrix[0][0];
+  let right = matrix[n - 1][n - 1];
+
+  // Count elements <= mid
+  function countLessEqual(mid) {
+    let count = 0;
+    let row = 0;
+    let col = n - 1;
+
+    while (row < n && col >= 0) {
+      if (matrix[row][col] <= mid) {
+        // all elements in this row till col are <= mid
+        count += col + 1;
+        row++;
+      } else {
+        col--;
+      }
+    }
+
+    return count;
+  }
+
+  // Binary Search
+  while (left < right) {
+    let mid = Math.floor((left + right) / 2);
+
+    if (countLessEqual(mid) < k) {
+      left = mid + 1;
+    } else {
+      right = mid;
+    }
+  }
+
+  return left;
+};
+
+// Problem 5: Find the Smallest Divisor Given a Threshold
+// Link: https://leetcode.com/problems/find-the-smallest-divisor-given-a-threshold/
+var smallestDivisor = function (nums, threshold) {
+  let left = 1;
+  let right = Math.max(...nums);
+
+  // Helper: compute sum after division
+  function computeSum(divisor) {
+    let sum = 0;
+
+    for (let num of nums) {
+      // ceil division
+      sum += Math.ceil(num / divisor);
+    }
+
+    return sum;
+  }
+
+  // Binary Search
+  while (left < right) {
+    let mid = Math.floor((left + right) / 2);
+
+    if (computeSum(mid) > threshold) {
+      // divisor too small → increase it
+      left = mid + 1;
+    } else {
+      // valid → try smaller divisor
+      right = mid;
+    }
+  }
+
+  return left;
 };

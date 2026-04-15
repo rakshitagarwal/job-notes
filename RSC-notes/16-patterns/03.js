@@ -1,139 +1,116 @@
-// ==================== 3. FAST & SLOW POINTER ====================
+// ==================== 3. INVERSALS ====================
 
 /**
- * Pattern: Fast & Slow Pointer (Tortoise and Hare)
+ * Pattern: Intervals
+ * Notes: https://www.hellointerview.com/learn/code/intervals/overview
  * Used for cycle detection and finding middle in linked lists
  */
 
-// Problem 1: Linked List Cycle
-// Pattern: Fast & Slow Pointer
-// Link: https://leetcode.com/problems/linked-list-cycle/
-class ListNode {
-  constructor(val) {
-    this.val = val;
-    this.next = null;
-  }
-}
-
-const hasCycle = function (head) {
-  if (!head || !head.next) return false;
-
-  let slow = head;
-  let fast = head;
-
-  while (fast && fast.next) {
-    slow = slow.next;
-    fast = fast.next.next;
-
-    if (slow === fast) return true;
+// Problem 1: Can Attend Meetings
+// Link: https://leetcode.com/problems/meeting-rooms/description/
+// Time: O(nlogn) | Space: O(1)
+function canAttendMeetings(intervals) {
+  if (intervals.length === 0) {
+    return true;
   }
 
-  return false;
-};
+  intervals.sort((a, b) => a[0] - b[0]);
 
-// Problem 2: Linked List Cycle II
-// Pattern: Fast & Slow Pointer
-// Link: https://leetcode.com/problems/linked-list-cycle-ii/
-const detectCycle = function (head) {
-  if (!head || !head.next) return null;
-
-  let slow = head;
-  let fast = head;
-
-  // Detect cycle
-  while (fast && fast.next) {
-    slow = slow.next;
-    fast = fast.next.next;
-
-    if (slow === fast) {
-      // Find cycle start
-      slow = head;
-      while (slow !== fast) {
-        slow = slow.next;
-        fast = fast.next;
-      }
-      return slow;
+  for (let i = 1; i < intervals.length; i++) {
+    if (intervals[i][0] < intervals[i - 1][1]) {
+      return false;
     }
-  }
-
-  return null;
-};
-
-// Problem 3: Happy Number
-// Pattern: Fast & Slow Pointer
-// Link: https://leetcode.com/problems/happy-number/
-const isHappy = function (n) {
-  const getNext = (num) => {
-    let sum = 0;
-    while (num > 0) {
-      const digit = num % 10;
-      sum += digit * digit;
-      num = Math.floor(num / 10);
-    }
-    return sum;
-  };
-
-  let slow = n;
-  let fast = getNext(n);
-
-  while (fast !== 1 && slow !== fast) {
-    slow = getNext(slow);
-    fast = getNext(getNext(fast));
-  }
-
-  return fast === 1;
-};
-
-// Problem 4: Middle of the Linked List
-// Pattern: Fast & Slow Pointer
-// Link: https://leetcode.com/problems/middle-of-the-linked-list/
-const middleNode = function (head) {
-  let slow = head;
-  let fast = head;
-
-  while (fast && fast.next) {
-    slow = slow.next;
-    fast = fast.next.next;
-  }
-
-  return slow;
-};
-
-// Problem 5: Palindrome Linked List
-// Pattern: Fast & Slow Pointer
-// Link: https://leetcode.com/problems/palindrome-linked-list/
-const isPalindromeLinkedList = function (head) {
-  if (!head || !head.next) return true;
-
-  // Find middle
-  let slow = head;
-  let fast = head;
-
-  while (fast && fast.next) {
-    slow = slow.next;
-    fast = fast.next.next;
-  }
-
-  // Reverse second half
-  let prev = null;
-  let curr = slow;
-
-  while (curr) {
-    const next = curr.next;
-    curr.next = prev;
-    prev = curr;
-    curr = next;
-  }
-
-  // Compare halves
-  let left = head;
-  let right = prev;
-
-  while (right) {
-    if (left.val !== right.val) return false;
-    left = left.next;
-    right = right.next;
   }
 
   return true;
-};
+}
+
+// Problem 2: Insert Interval
+// Link: https://leetcode.com/problems/insert-interval/description/
+// Time: O(nlogn) | Space: O(n)
+function insertIntervals(intervals, newInterval) {
+  const merged = [];
+  let i = 0;
+  const n = intervals.length;
+  while (i < n && intervals[i][1] < newInterval[0]) {
+    merged.push(intervals[i]);
+    i++;
+  }
+  while (i < n && intervals[i][0] <= newInterval[1]) {
+    newInterval[0] = Math.min(intervals[i][0], newInterval[0]);
+    newInterval[1] = Math.max(intervals[i][1], newInterval[1]);
+    i++;
+  }
+  merged.push(newInterval);
+  for (let j = i; j < n; j++) {
+    merged.push(intervals[j]);
+  }
+  return merged;
+}
+
+// Problem 3: Non-overlapping Intervals
+// Link: https://leetcode.com/problems/non-overlapping-intervals/description/
+// Time: O(nlogn) | Space: O(n)
+function nonOverlappingIntervals(intervals) {
+  if (intervals.length === 0) {
+    return 0;
+  }
+  intervals.sort((a, b) => a[1] - b[1]);
+  let end = intervals[0][1];
+  let count = 1;
+  for (let i = 1; i < intervals.length; i++) {
+    // Non-overlapping interval found
+    if (intervals[i][0] >= end) {
+      end = intervals[i][1];
+      count++;
+    }
+  }
+  return intervals.length - count;
+}
+
+// Pattern 4: Merge Intervals
+// Link: https://leetcode.com/problems/merge-intervals/description/
+// Time: O(nlogn) | Space: O(1)
+function mergeIntervals(intervals) {
+  const sortedIntervals = intervals.sort((a, b) => a[0] - b[0]);
+  const merged = [];
+
+  for (const interval of sortedIntervals) {
+    if (merged.length === 0 || interval[0] > merged[merged.length - 1][1]) {
+      merged.push(interval);
+    } else {
+      merged[merged.length - 1][1] = Math.max(
+        interval[1],
+        merged[merged.length - 1][1],
+      );
+    }
+  }
+  return merged;
+}
+
+// Pattern 5: Employee Free Time
+// Link: https://leetcode.com/problems/employee-free-time/description/
+// Time: O(nlogn) | Space: O(1)
+function employeeFreeTime(schedule) {
+  const flattened = schedule.flat();
+  const intervals = flattened.sort((a, b) => a[0] - b[0]);
+  const merged = [];
+  for (const interval of intervals) {
+    if (merged.length === 0 || merged[merged.length - 1][1] < interval[0]) {
+      merged.push(interval);
+    } else {
+      merged[merged.length - 1][1] = Math.max(
+        merged[merged.length - 1][1],
+        interval[1],
+      );
+    }
+  }
+
+  const free_times = [];
+  for (let i = 1; i < merged.length; i++) {
+    const start = merged[i - 1][1];
+    const end = merged[i][0];
+    free_times.push([start, end]);
+  }
+  return free_times;
+}

@@ -1,136 +1,124 @@
-// ==================== 4. BINARY SEARCH ====================
+// ==================== 4. STACK ====================
 
 /**
- * Pattern: Binary Search
- * Used on sorted data or search space, O(log n) complexity
+ * Pattern: Stack
+ * Notes: https://www.hellointerview.com/learn/code/stack/overview
+ * Used for LIFO (Last In First Out) problems
+ * Used for undo/redo
  */
 
-// Problem 1: Binary Search
-// Pattern: Binary Search
-// Link: https://leetcode.com/problems/binary-search/
-const search = function (nums, target) {
-  let left = 0;
-  let right = nums.length - 1;
-
-  while (left <= right) {
-    const mid = Math.floor((left + right) / 2);
-
-    if (nums[mid] === target) {
-      return mid;
-    } else if (nums[mid] < target) {
-      left = mid + 1;
+// Problem 1: Valid Parentheses
+// Link: https://leetcode.com/problems/valid-parentheses/
+// Time Complexity: O(n) | Space Complexity: O(n)
+function isValid(s) {
+  const stack = [];
+  const mapping = { ")": "(", "}": "{", "]": "[" };
+  for (const char of s) {
+    if (char in mapping) {
+      if (stack.length === 0 || stack[stack.length - 1] !== mapping[char]) {
+        return false;
+      }
+      stack.pop();
     } else {
-      right = mid - 1;
+      stack.push(char);
     }
   }
+  return stack.length === 0;
+}
 
-  return -1;
-};
+// Problem 2: Decode String
+// Link: https://leetcode.com/problems/decode-string/description/
+// Time Complexity: O(n) | Space Complexity: O(n)
+function decodeString(s) {
+  let stack = [];
+  let currString = "";
+  let currentNumber = 0;
+  for (let char of s) {
+    if (char === "[") {
+      stack.push(currString);
+      stack.push(currentNumber);
+      currString = "";
+      currentNumber = 0;
+    } else if (char === "]") {
+      let num = stack.pop();
+      let prevString = stack.pop();
+      currString = prevString + currString.repeat(num);
+    } else if (/\d/.test(char)) {
+      currentNumber = currentNumber * 10 + parseInt(char);
+    } else {
+      currString += char;
+    }
+  }
+  return currString;
+}
 
-// Problem 2: Search in Rotated Sorted Array
-// Pattern: Binary Search with rotation
-// Link: https://leetcode.com/problems/search-in-rotated-sorted-array/
-const searchRotated = function (nums, target) {
-  let left = 0;
-  let right = nums.length - 1;
+// Problem 3: Longest Valid Parentheses
+// Link: https://leetcode.com/problems/longest-valid-parentheses/description/
+// Time Complexity: O(n) | Space Complexity: O(n)
+function longestValidParentheses(s) {
+  let maxLen = 0;
+  let stack = [-1];
 
-  while (left <= right) {
-    const mid = Math.floor((left + right) / 2);
-
-    if (nums[mid] === target) return mid;
-
-    // Left half is sorted
-    if (nums[left] <= nums[mid]) {
-      if (target >= nums[left] && target < nums[mid]) {
-        right = mid - 1;
+  for (let i = 0; i < s.length; i++) {
+    let char = s[i];
+    if (char === "(") {
+      stack.push(i);
+    } else {
+      stack.pop();
+      if (stack.length === 0) {
+        stack.push(i);
       } else {
-        left = mid + 1;
+        maxLen = Math.max(maxLen, i - stack[stack.length - 1]);
       }
     }
-    // Right half is sorted
-    else {
-      if (target > nums[mid] && target <= nums[right]) {
-        left = mid + 1;
-      } else {
-        right = mid - 1;
-      }
-    }
   }
 
-  return -1;
-};
+  return maxLen;
+}
 
-// Problem 3: Find Peak Element
-// Pattern: Binary Search with rotation
-// Link: https://leetcode.com/problems/find-peak-element/
-const findPeakElement = function (nums) {
-  let left = 0;
-  let right = nums.length - 1;
+// Pattern: Monotonic Stack
+// Notes: https://www.hellointerview.com/learn/code/stack/monotonic-stack
 
-  while (left < right) {
-    const mid = Math.floor((left + right) / 2);
+// Problem 4: Daily Temperatures
+// Link: https://leetcode.com/problems/daily-temperatures/
+function dailyTemperatures(temps) {
+  const n = temps.length;
+  const result = new Array(n).fill(0);
+  const stack = [];
+  for (let i = 0; i < n; i++) {
+    while (stack.length > 0 && temps[i] > temps[stack[stack.length - 1]]) {
+      const idx = stack.pop();
+      result[idx] = i - idx;
+    }
+    stack.push(i);
+  }
+  return result;
+}
 
-    if (nums[mid] > nums[mid + 1]) {
-      right = mid;
+// Problem 5: Largest Rectangle in Histogram
+// Link: https://leetcode.com/problems/largest-rectangle-in-histogram/description/
+function largestRectangleArea(heights) {
+  let stack = [];
+  let maxArea = 0;
+  let i = 0;
+  while (i < heights.length) {
+    if (stack.length === 0 || heights[i] >= heights[stack[stack.length - 1]]) {
+      stack.push(i);
+      i++;
     } else {
-      left = mid + 1;
+      let top = stack.pop();
+      let right = i - 1;
+      let left = stack.length === 0 ? -1 : stack[stack.length - 1];
+      let area = heights[top] * (right - left);
+      maxArea = Math.max(maxArea, area);
     }
   }
 
-  return left;
-};
-
-// Problem 4: Koko Eating Bananas
-// Pattern: Binary Search with rotation
-// Link: https://leetcode.com/problems/koko-eating-bananas/
-const minEatingSpeed = function (piles, h) {
-  const canEat = (speed) => {
-    let hours = 0;
-    for (const pile of piles) {
-      hours += Math.ceil(pile / speed);
-    }
-    return hours <= h;
-  };
-
-  let left = 1;
-  let right = Math.max(...piles);
-
-  while (left < right) {
-    const mid = Math.floor((left + right) / 2);
-
-    if (canEat(mid)) {
-      right = mid;
-    } else {
-      left = mid + 1;
-    }
+  while (stack.length > 0) {
+    let top = stack.pop();
+    let width = stack.length === 0 ? i : i - stack[stack.length - 1] - 1;
+    let area = heights[top] * width;
+    maxArea = Math.max(maxArea, area);
   }
-
-  return left;
-};
-
-// Problem 5: Search a 2D Matrix
-// Pattern: Binary Search with rotation
-// Link: https://leetcode.com/problems/search-a-2d-matrix/
-const searchMatrix = function (matrix, target) {
-  if (!matrix.length || !matrix[0].length) return false;
-
-  const rows = matrix.length;
-  const cols = matrix[0].length;
-  let left = 0;
-  let right = rows * cols - 1;
-
-  while (left <= right) {
-    const mid = Math.floor((left + right) / 2);
-    const midValue = matrix[Math.floor(mid / cols)][mid % cols];
-
-    if (midValue === target) {
-      return true;
-    } else if (midValue < target) {
-      left = mid + 1;
-    } else {
-      right = mid - 1;
-    }
-  }
-
-  return false;
-};
+  return maxArea;
+}
