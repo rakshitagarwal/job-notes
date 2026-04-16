@@ -1,74 +1,112 @@
-// ==================== 13. BIT MANIPULATION ====================
+// ==================== 13. GREEDY ALGORITHMS ====================
 
 /**
- * Pattern: Bit Manipulation
- * Used for XOR and bit-level optimizations
+ * Notes: https://www.hellointerview.com/learn/code/greedy/overview
+ * Time Complexity: O(n) | Space Complexity: O(1)
  */
 
-// Problem 1: Single Number
-// Pattern: XOR
-// Link: https://leetcode.com/problems/single-number/
-const singleNumber = function (nums) {
-  let result = 0;
-  for (const num of nums) {
-    result ^= num;
-  }
-  return result;
-};
-
-// Problem 2: Counting Bits
-// Pattern: Dynamic Programming
-// Link: https://leetcode.com/problems/counting-bits/
-const countBits = function (n) {
-  const dp = new Array(n + 1).fill(0);
-
-  for (let i = 1; i <= n; i++) {
-    dp[i] = dp[i >> 1] + (i & 1);
+// Problem 1: Best Time to Buy and Sell Stock
+// Link: https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
+function maxProfit(prices) {
+  if (prices.length === 0) {
+    return 0;
   }
 
-  return dp;
-};
+  let minPrice = prices[0];
+  let maxProfit = 0;
 
-// Problem 3: Missing Number
-// Pattern: XOR
-// Link: https://leetcode.com/problems/missing-number/
-const missingNumber = function (nums) {
-  let xor = nums.length;
-
-  for (let i = 0; i < nums.length; i++) {
-    xor ^= i ^ nums[i];
+  for (let i = 0; i < prices.length; i++) {
+    minPrice = Math.min(minPrice, prices[i]);
+    maxProfit = Math.max(maxProfit, prices[i] - minPrice);
   }
 
-  return xor;
-};
+  return maxProfit;
+}
 
-// Problem 4: Sum of Two Integers
-// Pattern: Bit Manipulation
-// Link: https://leetcode.com/problems/sum-of-two-integers/
-const getSum = function (a, b) {
-  while (b !== 0) {
-    const carry = (a & b) << 1;
-    a = a ^ b;
-    b = carry;
+// Problem 2: Gas Station
+// Link: https://leetcode.com/problems/gas-station/
+var canCompleteCircuit = function (gas, cost) {
+  if (gas.reduce((a, b) => a + b, 0) < cost.reduce((a, b) => a + b, 0)) {
+    return -1;
   }
-  return a;
-};
 
-// Problem 5: Subsets (Bit Manipulation version)
-// Pattern: Bit Manipulation
-// Link: https://leetcode.com/problems/subsets/
-const subsetsBit = function (nums) {
-  const result = [];
-  const total = 1 << nums.length;
-
-  for (let i = 0; i < total; i++) {
-    const subset = [];
-    for (let j = 0; j < nums.length; j++) {
-      if (i & (1 << j)) {
-        subset.push(nums[j]);
-      }
+  let start = 0,
+    fuel = 0;
+  for (let i = 0; i < gas.length; i++) {
+    if (fuel + gas[i] - cost[i] < 0) {
+      // can't reach next station:
+      // try starting from next station
+      start = i + 1;
+      fuel = 0;
+    } else {
+      // can reach next station:
+      // update remaining fuel
+      fuel += gas[i] - cost[i];
     }
-    result.push(subset);
+  }
+
+  return start;
+};
+
+// Problem 3: Jump Game
+// Link: https://leetcode.com/problems/jump-game/
+var canJump = function (nums) {
+  let maxReach = 0;
+  for (let i = 0; i < nums.length; i++) {
+    if (i > maxReach) {
+      return false;
+    }
+    maxReach = Math.max(maxReach, i + nums[i]);
+  }
+  return true;
+};
+
+// Problem 4: Jump Game II
+// Link: https://leetcode.com/problems/jump-game-ii/
+var jump = function (nums) {
+  let jumps = 0;
+  let currentEnd = 0;
+  let farthest = 0;
+
+  // no need to go till last index
+  for (let i = 0; i < nums.length - 1; i++) {
+    // update farthest reach
+    farthest = Math.max(farthest, i + nums[i]);
+
+    // when we reach end of current jump
+    if (i === currentEnd) {
+      jumps++;
+      currentEnd = farthest;
+    }
+  }
+
+  return jumps;
+};
+
+// Problem 5: Partition Labels
+// Link: https://leetcode.com/problems/partition-labels/
+var partitionLabels = function (s) {
+  // Step 1: Last occurrence map
+  const lastIndex = {};
+
+  for (let i = 0; i < s.length; i++) {
+    lastIndex[s[i]] = i;
+  }
+
+  const result = [];
+  let start = 0;
+  let end = 0;
+
+  // Step 2: Greedy traversal
+  for (let i = 0; i < s.length; i++) {
+    // expand partition
+    end = Math.max(end, lastIndex[s[i]]);
+
+    // when partition closes
+    if (i === end) {
+      result.push(end - start + 1);
+      start = i + 1;
+    }
   }
 
   return result;

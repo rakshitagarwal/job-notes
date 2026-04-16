@@ -1,113 +1,82 @@
-// ==================== 16. PREFIX SUM ====================
+// ==================== 16. MATRICES ====================
 
-/**
- * Pattern: Prefix Sum
- * Used for range queries and cumulative sums
- */
-
-// Problem 1: Subarray Sum Equals K
-// Pattern: Prefix Sum
-// Link: https://leetcode.com/problems/subarray-sum-equals-k/
-const subarraySum = function (nums, k) {
-  const prefixSumCount = new Map();
-  prefixSumCount.set(0, 1);
-
-  let sum = 0;
-  let count = 0;
-
-  for (const num of nums) {
-    sum += num;
-
-    if (prefixSumCount.has(sum - k)) {
-      count += prefixSumCount.get(sum - k);
+// Problem 1: Spiral Matrix
+// Link: https://leetcode.com/problems/spiral-matrix/
+function spiralOrder(matrix) {
+  let result = [];
+  while (matrix.length > 0) {
+    result = result.concat(matrix.shift());
+    if (matrix.length > 0 && matrix[0].length > 0) {
+      for (let row of matrix) {
+        result.push(row.pop());
+      }
     }
-
-    prefixSumCount.set(sum, (prefixSumCount.get(sum) || 0) + 1);
-  }
-
-  return count;
-};
-
-// Problem 2: Range Sum Query - Immutable
-// Pattern: Prefix Sum
-// Link: https://leetcode.com/problems/range-sum-query-immutable/
-class NumArray {
-  constructor(nums) {
-    this.prefixSum = new Array(nums.length + 1).fill(0);
-    for (let i = 0; i < nums.length; i++) {
-      this.prefixSum[i + 1] = this.prefixSum[i] + nums[i];
+    if (matrix.length > 0) {
+      result = result.concat(matrix.pop().reverse());
+    }
+    if (matrix.length > 0 && matrix[0].length > 0) {
+      for (let i = matrix.length - 1; i >= 0; i--) {
+        result.push(matrix[i].shift());
+      }
     }
   }
-
-  sumRange(left, right) {
-    return this.prefixSum[right + 1] - this.prefixSum[left];
-  }
+  return result;
 }
 
-// Problem 3: Continuous Subarray Sum
-// Pattern: Prefix Sum
-// Link: https://leetcode.com/problems/continuous-subarray-sum/
-const checkSubarraySum = function (nums, k) {
-  const remainderMap = new Map();
-  remainderMap.set(0, -1);
-
-  let sum = 0;
-
-  for (let i = 0; i < nums.length; i++) {
-    sum += nums[i];
-
-    if (k !== 0) {
-      sum %= k;
+// Problem 2: Rotate Image
+// Link: https://leetcode.com/problems/rotate-image/
+var rotate = function (matrix) {
+    const n = matrix.length;
+    // Transpose the matrix
+    for (let i = 0; i < n; i++) {
+        for (let j = i; j < n; j++) {
+            [matrix[i][j], matrix[j][i]] = 
+                [matrix[j][i], matrix[i][j]];
+        }
     }
-
-    if (remainderMap.has(sum)) {
-      if (i - remainderMap.get(sum) >= 2) {
-        return true;
-      }
-    } else {
-      remainderMap.set(sum, i);
+    // Reverse each row
+    for (let i = 0; i < n; i++) {
+        matrix[i].reverse();
     }
-  }
+    return matrix;
+}
 
-  return false;
-};
-
-// Problem 4: Product of Array Except Self
-// Pattern: Prefix Sum
-// Link: https://leetcode.com/problems/product-of-array-except-self/
-const productExceptSelf = function (nums) {
-  const result = new Array(nums.length).fill(1);
-
-  // Calculate prefix products
-  let prefix = 1;
-  for (let i = 0; i < nums.length; i++) {
-    result[i] = prefix;
-    prefix *= nums[i];
-  }
-
-  // Calculate suffix products and multiply
-  let suffix = 1;
-  for (let i = nums.length - 1; i >= 0; i--) {
-    result[i] *= suffix;
-    suffix *= nums[i];
-  }
-
-  return result;
-};
-
-// Problem 5: Find Pivot Index
-// Pattern: Prefix Sum
-// Link: https://leetcode.com/problems/find-pivot-index/
-const pivotIndex = function (nums) {
-  const totalSum = nums.reduce((sum, num) => sum + num, 0);
-  let leftSum = 0;
-
-  for (let i = 0; i < nums.length; i++) {
-    if (leftSum === totalSum - leftSum - nums[i]) {
-      return i;
+// Problem 3: Set Matrix Zeroes
+// Link: https://leetcode.com/problems/set-matrix-zeroes/
+var setZeroes = function(matrix) {
+    const rows = matrix.length;
+    const cols = matrix[0].length;
+    let firstRowZero = false;
+    let firstColZero = false;
+    for (let j = 0; j < cols; j++) {
+        if (matrix[0][j] === 0) firstRowZero = true;
     }
-    leftSum += nums[i];
-  }
-
-  return -1;
-};
+    for (let i = 0; i < rows; i++) {
+        if (matrix[i][0] === 0) firstColZero = true;
+    }
+    for (let i = 1; i < rows; i++) {
+        for (let j = 1; j < cols; j++) {
+            if (matrix[i][j] === 0) {
+                matrix[i][0] = 0;
+                matrix[0][j] = 0;
+            }
+        }
+    }
+    for (let i = 1; i < rows; i++) {
+        for (let j = 1; j < cols; j++) {
+            if (matrix[i][0] === 0 || matrix[0][j] === 0) {
+                matrix[i][j] = 0;
+            }
+        }
+    }
+    if (firstRowZero) {
+        for (let j = 0; j < cols; j++) {
+            matrix[0][j] = 0;
+        }
+    }
+    if (firstColZero) {
+        for (let i = 0; i < rows; i++) {
+            matrix[i][0] = 0;
+        }
+    }
+}
