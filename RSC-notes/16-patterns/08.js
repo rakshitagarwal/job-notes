@@ -1,163 +1,337 @@
-// ==================== 8. BACKTRACKING ====================
+// ==================== 8. DEPTH FIRST SEARCH ====================
 
 /**
- * Pattern: Backtracking
- * Used for generating all combinations/permutations
+ * Notes: https://www.hellointerview.com/learn/code/depth-first-search/introduction
+ * Notes: https://www.hellointerview.com/learn/code/depth-first-search/fundamentals
+ * Notes: https://www.hellointerview.com/learn/code/depth-first-search/return-values
+ * Time Complexity: O(V + E) | Space Complexity: O(V)
  */
 
-// Problem 1: Subsets
-// Pattern: Backtracking
-// Link: https://leetcode.com/problems/subsets/
-const subsets = function (nums) {
-  const result = [];
-
-  const backtrack = (start, current) => {
-    result.push([...current]);
-
-    for (let i = start; i < nums.length; i++) {
-      current.push(nums[i]);
-      backtrack(i + 1, current);
-      current.pop();
-    }
-  };
-
-  backtrack(0, []);
-  return result;
+// Problem 1: Maximum Depth of Binary Tree
+// Link: https://leetcode.com/problems/maximum-depth-of-binary-tree/
+var maxDepth = function (root) {
+  if (root === null) {
+    return 0;
+  }
+  // get the maximum depth of the left and right subtrees
+  const left = maxDepth(root.left);
+  const right = maxDepth(root.right);
+  return Math.max(left, right) + 1;
 };
 
-// Problem 2: Permutations
-// Pattern: Backtracking
-// Link: https://leetcode.com/problems/permutations/
-const permute = function (nums) {
-  const result = [];
-
-  const backtrack = (current) => {
-    if (current.length === nums.length) {
-      result.push([...current]);
-      return;
-    }
-
-    for (let i = 0; i < nums.length; i++) {
-      if (current.includes(nums[i])) continue;
-      current.push(nums[i]);
-      backtrack(current);
-      current.pop();
-    }
-  };
-
-  backtrack([]);
-  return result;
+// Problem 2: Path Sum
+// Link: https://leetcode.com/problems/path-sum/
+var hasPathSum = function (root, targetSum) {
+  if (!root) {
+    return false;
+  }
+  if (!root.left && !root.right) {
+    return targetSum === root.val;
+  }
+  const left = hasPathSum(root.left, targetSum - root.val);
+  const right = hasPathSum(root.right, targetSum - root.val);
+  return left || right;
 };
 
-// Problem 3: Combination Sum
-// Pattern: Backtracking
-// Link: https://leetcode.com/problems/combination-sum/
-const combinationSum = function (candidates, target) {
-  const result = [];
-
-  const backtrack = (start, current, sum) => {
-    if (sum === target) {
-      result.push([...current]);
-      return;
+// Problem 3: Count Good Nodes in Binary Tree
+// Link: https://leetcode.com/problems/count-good-nodes-in-binary-tree/
+var goodNodes = function (root) {
+  function dfs(root, max) {
+    if (!root) {
+      return 0;
     }
 
-    if (sum > target) return;
-
-    for (let i = start; i < candidates.length; i++) {
-      current.push(candidates[i]);
-      backtrack(i, current, sum + candidates[i]);
-      current.pop();
+    let count = 0;
+    if (root.val >= max) {
+      count += 1;
+      max = root.val;
     }
-  };
 
-  backtrack(0, [], 0);
-  return result;
+    const left = dfs(root.left, max);
+    const right = dfs(root.right, max);
+    return left + right + count;
+  }
+
+  return dfs(root, -Infinity);
 };
 
-// Problem 4: N-Queens
-// Pattern: Backtracking
-// Link: https://leetcode.com/problems/n-queens/
-const solveNQueens = function (n) {
-  const result = [];
-  const board = Array(n)
-    .fill()
-    .map(() => Array(n).fill("."));
-
-  const isValid = (row, col) => {
-    // Check column
-    for (let i = 0; i < row; i++) {
-      if (board[i][col] === "Q") return false;
+// Problem 4: Validate Binary Search Tree
+// Link: https://leetcode.com/problems/validate-binary-search-tree/
+function isValidBST(root) {
+  function dfs(node, min, max) {
+    // base case
+    if (node === null) {
+      return true;
     }
-
-    // Check diagonal (top-left to bottom-right)
-    for (let i = row, j = col; i >= 0 && j >= 0; i--, j--) {
-      if (board[i][j] === "Q") return false;
-    }
-
-    // Check anti-diagonal (top-right to bottom-left)
-    for (let i = row, j = col; i >= 0 && j < n; i--, j++) {
-      if (board[i][j] === "Q") return false;
-    }
-
-    return true;
-  };
-
-  const backtrack = (row) => {
-    if (row === n) {
-      result.push(board.map((row) => row.join("")));
-      return;
-    }
-
-    for (let col = 0; col < n; col++) {
-      if (isValid(row, col)) {
-        board[row][col] = "Q";
-        backtrack(row + 1);
-        board[row][col] = ".";
-      }
-    }
-  };
-
-  backtrack(0);
-  return result;
-};
-
-// Problem 5: Word Search
-// Pattern: Backtracking
-// Link: https://leetcode.com/problems/word-search/
-const exist = function (board, word) {
-  const rows = board.length;
-  const cols = board[0].length;
-
-  const dfs = (i, j, index) => {
-    if (index === word.length) return true;
-    if (
-      i < 0 ||
-      i >= rows ||
-      j < 0 ||
-      j >= cols ||
-      board[i][j] !== word[index]
-    ) {
+    // check if the current node's value is within the valid range
+    if (node.val <= min || node.val >= max) {
       return false;
     }
+    return dfs(node.left, min, node.val) && dfs(node.right, node.val, max);
+  }
+  return dfs(root, -Infinity, Infinity);
+}
 
-    const temp = board[i][j];
-    board[i][j] = "#"; // Mark as visited
+// Problem 5: Binary Tree Tilt
+// Link: https://leetcode.com/problems/binary-tree-tilt/
+function findTilt(root) {
+  let tilt = 0;
+  // define a helper function to perform the recursive calls
+  // this ensures that the tilt variable is not accessible outside of the main function
+  function dfs(node) {
+    // base case
+    if (!node) {
+      return 0;
+    }
+    // get the sum of the current node's left and right subtrees
+    const left = dfs(node.left);
+    const right = dfs(node.right);
+    // calculate tilt of current subtree, and add it to the global tilt variable
+    tilt += Math.abs(left - right);
+    // return the sum of the current subtree
+    return left + right + node.val;
+  }
+  // initiate the call to the helper function
+  dfs(root);
+  return tilt;
+}
 
-    const found =
-      dfs(i + 1, j, index + 1) ||
-      dfs(i - 1, j, index + 1) ||
-      dfs(i, j + 1, index + 1) ||
-      dfs(i, j - 1, index + 1);
+// Problem 6: Diameter of Binary Tree
+// Link: https://leetcode.com/problems/diameter-of-binary-tree/
+function diameterOfBinaryTree(root) {
+  let maxDiameter = 0;
 
-    board[i][j] = temp; // Backtrack
-    return found;
-  };
+  function dfs(node) {
+    if (!node) {
+      return 0;
+    }
+    const left = dfs(node.left);
+    const right = dfs(node.right);
+    maxDiameter = Math.max(maxDiameter, left + right);
+    return Math.max(left, right) + 1;
+  }
+  dfs(root);
+  return maxDiameter;
+}
 
-  for (let i = 0; i < rows; i++) {
-    for (let j = 0; j < cols; j++) {
-      if (dfs(i, j, 0)) return true;
+// Problem 7: Path Sum 2
+// Link: https://leetcode.com/problems/path-sum-ii/
+function pathSum(root, target) {
+  function dfs(node, target, path) {
+    if (!node) {
+      return;
+    }
+    path.push(node.val);
+    if (!node.left && !node.right) {
+      if (node.val === target) {
+        result.push([...path]);
+      }
+    }
+    dfs(node.left, target - node.val, path);
+    dfs(node.right, target - node.val, path);
+    path.pop();
+  }
+  const result = [];
+  dfs(root, target, []);
+  return result;
+}
+
+// Problem 8: Longest univalued path
+// Link: https://leetcode.com/problems/longest-univalue-path/
+function longestUnivaluePath(root) {
+  let maxLength = 0;
+
+  function dfs(node) {
+    if (!node) {
+      return 0;
+    }
+
+    const leftLength = dfs(node.left);
+    const rightLength = dfs(node.right);
+    let leftArrow = 0,
+      rightArrow = 0;
+    // check if children have the same value as the current node,
+    // which means we can extend the univalue path by including the
+    // current node
+    if (node.left && node.left.val === node.val) {
+      leftArrow = leftLength + 1;
+    }
+    if (node.right && node.right.val === node.val) {
+      rightArrow = rightLength + 1;
+    }
+    // leftArrow + rightArrow is the length of the longest
+    // univalue path that goes through the current node
+    maxLength = Math.max(maxLength, leftArrow + rightArrow);
+    return Math.max(leftArrow, rightArrow);
+  }
+
+  dfs(root);
+  return maxLength;
+}
+
+// Notes DFS with graphs: https://www.hellointerview.com/learn/code/depth-first-search/graphs-overview
+// Notes: https://www.hellointerview.com/learn/code/depth-first-search/adjacency-list
+
+// Problem 9: Flood Fill
+// Link: https://leetcode.com/problems/flood-fill/
+function floodFill(image, sr, sc, color) {
+  const rows = image.length;
+  const cols = image[0].length;
+  const originalColor = image[sr][sc];
+
+  if (originalColor === color) {
+    return image;
+  }
+
+  function dfs(r, c) {
+    if (image[r][c] === originalColor) {
+      image[r][c] = color;
+
+      if (r >= 1) dfs(r - 1, c);
+      if (r + 1 < rows) dfs(r + 1, c);
+      if (c >= 1) dfs(r, c - 1);
+      if (c + 1 < cols) dfs(r, c + 1);
+    }
+    return;
+  }
+
+  dfs(sr, sc);
+  return image;
+}
+
+// Problem 10: Number of Islands
+// Link: https://leetcode.com/problems/number-of-islands/
+var numIslands = function (grid) {
+  let count = 0;
+
+  for (let i = 0; i < grid.length; i++) {
+    for (let j = 0; j < grid[i].length; j++) {
+      if (grid[i][j] === "1") {
+        count = count + dfs(grid, i, j);
+      }
     }
   }
 
-  return false;
+  function dfs(grid, row, col) {
+    if (
+      row < 0 ||
+      row > grid.length - 1 ||
+      col < 0 ||
+      col > grid[row].length - 1 ||
+      grid[row][col] === "0"
+    ) {
+      return;
+    }
+    grid[row][col] = "0";
+
+    dfs(grid, row + 1, col);
+    dfs(grid, row - 1, col);
+    dfs(grid, row, col + 1);
+    dfs(grid, row, col - 1);
+    return 1;
+  }
+
+  return count ? count : 0;
+};
+
+// Problem 11: Surrounded Regions
+// Link: https://leetcode.com/problems/surrounded-regions/
+function solve(grid) {
+  if (!grid || grid.length === 0) {
+    return grid;
+  }
+
+  const rows = grid.length;
+  const cols = grid[0].length;
+  // recursive function to find all the "O"s that are reachable
+  // from the border and mark them as "S"
+  function dfs(x, y) {
+    // return immediately if the cell is out of bounds or is not an "O"
+    if (x < 0 || y < 0 || x >= rows || y >= cols || grid[x][y] !== "O") {
+      return;
+    }
+    grid[x][y] = "S";
+    // explore the neighboring cells
+    dfs(x + 1, y);
+    dfs(x - 1, y);
+    dfs(x, y + 1);
+    dfs(x, y - 1);
+  }
+  // initialize the dfs for the first and last column
+  for (let i = 0; i < rows; i++) {
+    if (grid[i][0] === "O") {
+      dfs(i, 0);
+    }
+    if (grid[i][cols - 1] === "O") {
+      dfs(i, cols - 1);
+    }
+  }
+  // initialize the dfs for the first and last row
+  for (let j = 0; j < cols; j++) {
+    if (grid[0][j] === "O") {
+      dfs(0, j);
+    }
+    if (grid[rows - 1][j] === "O") {
+      dfs(rows - 1, j);
+    }
+  }
+  // change the "O"s that are not marked as "S" to "X"s and the "S"s back to "O"s
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      if (grid[i][j] === "O") {
+        grid[i][j] = "X";
+      } else if (grid[i][j] === "S") {
+        grid[i][j] = "O";
+      }
+    }
+  }
+
+  return grid;
+}
+
+// Problem 12: Pacific Atlantic Water Flow
+// Link: https://leetcode.com/problems/pacific-atlantic-water-flow/
+var pacificAtlantic = function (grid) {
+  if (!grid || !grid[0]) {
+    return [];
+  }
+  const rows = grid.length,
+    cols = grid[0].length;
+  // Step 1: Initialize empty sets
+  const pacificReachable = new Set();
+  const atlanticReachable = new Set();
+  function dfs(r, c, reachable) {
+    reachable.add(r + "," + c);
+    const directions = [
+      [1, 0],
+      [-1, 0],
+      [0, 1],
+      [0, -1],
+    ];
+    for (const [dr, dc] of directions) {
+      const nr = r + dr,
+        nc = c + dc;
+      if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+        const key = nr + "," + nc;
+        if (!reachable.has(key) && grid[nr][nc] >= grid[r][c]) {
+          dfs(nr, nc, reachable);
+        }
+      }
+    }
+  }
+  // initializes DFS from all cells in the Atlantic and Pacific Oceans
+  // Note how we share a single visited set
+  // across DFS calls that originate from the same ocean
+  for (let r = 0; r < rows; r++) {
+    dfs(r, 0, pacificReachable);
+    dfs(r, cols - 1, atlanticReachable);
+  }
+  for (let c = 0; c < cols; c++) {
+    dfs(0, c, pacificReachable);
+    dfs(rows - 1, c, atlanticReachable);
+  }
+  // return the intersection of both sets.
+  return Array.from(pacificReachable)
+    .filter((cell) => atlanticReachable.has(cell))
+    .map((cell) => cell.split(",").map(Number));
 };
