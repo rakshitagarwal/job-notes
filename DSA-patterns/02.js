@@ -76,9 +76,29 @@ var maximumSubarraySum = function (nums, k) {
   return maxSum === -Infinity ? 0 : maxSum;
 };
 
-// variable length sliding window
+// variable length sliding window pattern
+// Problem 4: Fruit Into Baskets
+// Link: https://leetcode.com/problems/fruit-into-baskets/
+// Time Complexity: O(N) | Space Complexity: O(1)
+var totalFruit = function (fruits) {
+  let start = 0;
+  let basket = {};
+  let maxFruit = 0;
+  for (let end = 0; end < fruits.length; end++) {
+    basket[fruits[end]] = (basket[fruits[end]] || 0) + 1;
+    while (Object.keys(basket).length > 2) {
+      basket[fruits[start]]--;
+      if (basket[fruits[start]] === 0) {
+        delete basket[fruits[start]];
+      }
+      start++;
+    }
+    maxFruit = Math.max(maxFruit, end - start + 1);
+  }
+  return maxFruit;
+};
 
-// Problem 4: Longest Substring Without Repeating Characters
+// Problem 5: Longest Substring Without Repeating Characters
 // Link: https://leetcode.com/problems/longest-substring-without-repeating-characters/
 // Time Complexity: O(N) | Space Complexity: O(1)
 var lengthOfLongestSubstring = function (s) {
@@ -97,7 +117,7 @@ var lengthOfLongestSubstring = function (s) {
   return maxLength;
 };
 
-// Problem 5: Longest Repeating Character Replacement
+// Problem 6: Longest Repeating Character Replacement
 // Link: https://leetcode.com/problems/longest-repeating-character-replacement/
 // Time Complexity: O(N) | Space Complexity: O(1)
 var characterReplacement = function (s, k) {
